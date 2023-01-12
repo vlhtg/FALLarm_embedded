@@ -68,6 +68,8 @@ void event() {
 
   Serial.println("alarm start");
 
+  updateBase(true);
+  
   send("alarm");
 
   for(int i = 0; i < 12; ++i) {
@@ -75,6 +77,7 @@ void event() {
     pixels.show();
     delay(50);
   }
+
 
   pixels.show();
 
@@ -87,6 +90,8 @@ void event() {
     delay(50);
   }
   Serial.println("alarm turned off");
+
+  updateBase("false");
 
   send("alarmok");
 
