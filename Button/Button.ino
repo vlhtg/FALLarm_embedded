@@ -38,7 +38,7 @@ int melodyLength = 4; //Length of alarm_melody array
 int goodLength = 2; //Length of good_melody array
 int noteDuration = 1000; //Duration of a note
 int notePause = 100; //Pause between notes
-int alarmTime = 60E3; //Time before alarm automatically turns off
+int alarmTime = 120E3; //Time before alarm automatically turns off
 
 void IRAM_ATTR ISR(){ //Function that is called if button is pushed
   buttonState = 0;
@@ -59,10 +59,15 @@ void setup() {
   pixels.show();
 
   WiFi.begin(ssid, password);
- 
+
+  int connectionTries = 0;
   while (WiFi.status() != WL_CONNECTED) {
+    ++ connectionTries;
     delay(1000);
     Serial.println("Connecting to WiFi..");
+    if(connectionTries >= 10){
+      ESP.restart();
+    }
   }
   
   if(!MDNS.begin("fallserver")) {
@@ -228,7 +233,11 @@ void event() { //What happens when a fall is detected
   while(buttonState) { //Buzzer and intercepts button input
     alarm();
 
-    if (millis() >= startTime + alarmTime) return;
+    if (millis() >= startTime + alarmTime){
+      Serial.println("Alarm stopped");
+      alarmStatus = 0;
+      return;
+    }
   }
   
   Serial.println("alarm turned off");
